@@ -1,12 +1,18 @@
 FROM gcfntnu/scanpy:1.10.3
 
-#ADD ./deepsignal-plant /home/deepsignal-plant
-#ADD ./DeepS2bam_converter /home/DeepS2bam_converter
 SHELL ["/bin/bash", "-c"]
 WORKDIR /usr/src/app
-# COPY requirements.txt requirements.txt
 
-# RUN pip3 install --no-cache-dir -r requirements.txt
+
+RUN conda install anndata2ri=1.1 \
+    && conda install -c conda-forge pkg-config
+
+RUN . /opt/conda/etc/profile.d/conda.sh && \
+    conda activate base && \
+    R -e "options(repos='https://cran.rstudio.com'); \
+        install.packages('SoupX'); \
+        BiocManager::install(c('scater','scDblFinder','scry','scran'));"
+
 
 EXPOSE 8888
-CMD /bin/bash
+CMD ["/bin/bash"]
